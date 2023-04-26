@@ -1,2 +1,5 @@
 .env
 session.dat
+__pycache__/*
+.idea/*
+venv/*
