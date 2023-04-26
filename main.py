@@ -60,7 +60,7 @@ async def main():
             data['author'] = msg.from_user.id
             # Write all the data to MySQL
             db_connection.query(
-                'INSERT INTO `subscribe_checker`(`username`, `channel_id`, `author`) VALUE (%s, %s, %s)',
+                'INSERT INTO `checklist`(`username`, `channel_id`, `author`) VALUE (%s, %s, %s)',
                 list(data.values())
             )
 
@@ -73,7 +73,7 @@ async def main():
         await self.bot.send_message(msg.chat.id, dialog['wait'])
 
         users_list = db_connection.select_query(
-            'SELECT * FROM `subscribe_checker` WHERE `author`=%s ORDER BY channel_id, id',
+            'SELECT * FROM `checklist` WHERE `author`=%s ORDER BY channel_id, id',
             (msg.from_user.id,),
         )
         response = ""
@@ -124,7 +124,7 @@ async def main():
 
             channels_list = db_connection.select_query(
                 '''SELECT channel_id, GROUP_CONCAT(username) as users, author
-                 FROM `subscribe_checker`
+                 FROM `checklist`
                  WHERE `author`=%s''' + (' AND `channel_id`=%s' if channel_id != '-' else '') + '''
                  GROUP BY channel_id
                  ORDER BY channel_id, id''',
@@ -183,7 +183,7 @@ async def main():
                 params.append(msg.from_user.id)
 
             db_connection.query(
-                'INSERT INTO `subscribe_checker`(`username`, `channel_id`, `author`) VALUES ' + values[:-1],
+                'INSERT INTO `checklist`(`username`, `channel_id`, `author`) VALUES ' + values[:-1],
                 params,
             )
 
@@ -207,7 +207,7 @@ async def main():
             params = []
             ignored = []
             pre_data = db_connection.select_query(
-                'SELECT CONCAT(username, channel_id) as item FROM `subscribe_checker` WHERE `author`=%s',
+                'SELECT CONCAT(username, channel_id) as item FROM `checklist` WHERE `author`=%s',
                 (msg.from_user.id,),
             )
             pre_data = list(map(lambda x: x['item'], pre_data))
@@ -233,7 +233,7 @@ async def main():
 
             if len(params) > 0:
                 db_connection.query(
-                    'INSERT INTO `subscribe_checker`(`username`, `channel_id`, `author`) VALUES '
+                    'INSERT INTO `checklist`(`username`, `channel_id`, `author`) VALUES '
                     + ', '.join(['(%s, %s, %s)' for _ in range(len(params) // 3)]),
                     params,
                 )
