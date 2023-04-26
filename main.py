@@ -123,7 +123,8 @@ async def main():
             await self.bot.send_message(msg.chat.id, dialog['wait'])
 
             channels_list = db_connection.select_query(
-                '''SELECT channel_id, GROUP_CONCAT(username) as users, author
+                '''SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+                 SELECT channel_id, GROUP_CONCAT(username) as users, author
                  FROM `checklist`
                  WHERE `author`=%s''' + (' AND `channel_id`=%s' if channel_id != '-' else '') + '''
                  GROUP BY channel_id

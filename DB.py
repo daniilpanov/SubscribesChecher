@@ -19,19 +19,19 @@ class DB:
 
         self.query('SET NAMES %s', (db_charset,))
 
-    def query(self, sql, params=None, commit=True, reconnectonerror=True):
+    def query(self, sql, params=None, commit=True, reconnectonerror=True, multi=False):
         if reconnectonerror:
             try:
-                self.cursor.execute(sql, params)
+                self.cursor.execute(sql, params, multi=multi)
                 if commit:
                     self.cnx.commit()
             except OperationalError:
                 self.cnx = connect(user=self.db_user, password=self.db_pass, host=self.db_host, database=self.db_name,
                                    port=self.db_port)
                 self.cursor = self.cnx.cursor(dictionary=True, buffered=True)
-                self.query(sql, params, commit, False)
+                self.query(sql, params, commit, False, multi)
         else:
-            self.cursor.execute(sql, params)
+            self.cursor.execute(sql, params, multi=multi)
             if commit:
                 self.cnx.commit()
 
