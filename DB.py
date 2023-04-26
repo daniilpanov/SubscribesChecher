@@ -19,24 +19,24 @@ class DB:
 
         self.query('SET NAMES %s', (db_charset,))
 
-    def query(self, sql, params=None, commit=True, reconnectonerror=True, multi=False):
+    def query(self, sql, params=None, commit=True, reconnectonerror=True):
         if reconnectonerror:
             try:
-                self.cursor.execute(sql, params, multi=multi)
+                self.cursor.execute(sql, params)
                 if commit:
                     self.cnx.commit()
             except OperationalError:
                 self.cnx = connect(user=self.db_user, password=self.db_pass, host=self.db_host, database=self.db_name,
                                    port=self.db_port)
                 self.cursor = self.cnx.cursor(dictionary=True, buffered=True)
-                self.query(sql, params, commit, False, multi)
+                self.query(sql, params, commit, False)
         else:
-            self.cursor.execute(sql, params, multi=multi)
+            self.cursor.execute(sql, params)
             if commit:
                 self.cnx.commit()
 
-    def select_query(self, sql, params=None, multi=True, multi_sql=False):
-        self.query(sql, params, False, multi=multi_sql)
+    def select_query(self, sql, params=None, multi=True):
+        self.query(sql, params, False)
         return self.cursor.fetchall() if multi else self.cursor.fetchone()
 
     def __del__(self):

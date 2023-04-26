@@ -122,15 +122,14 @@ async def main():
             dialog = dialogs.get('show_list')
             await self.bot.send_message(msg.chat.id, dialog['wait'])
 
+            db_connection.query("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))")
             channels_list = db_connection.select_query(
-                '''SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
-                 SELECT channel_id, GROUP_CONCAT(username) as users, author
+                '''SELECT channel_id, GROUP_CONCAT(username) as users, author
                  FROM `checklist`
                  WHERE `author`=%s''' + (' AND `channel_id`=%s' if channel_id != '-' else '') + '''
                  GROUP BY channel_id
                  ORDER BY channel_id, id''',
                 (msg.from_user.id, channel_id) if channel_id != '-' else (msg.from_user.id,),
-                multi_sql=True,
             )
 
             if len(channels_list) > 0:
