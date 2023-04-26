@@ -35,8 +35,8 @@ class DB:
             if commit:
                 self.cnx.commit()
 
-    def select_query(self, sql, params=None, multi=True):
-        self.query(sql, params, False)
+    def select_query(self, sql, params=None, multi=True, multi_sql=False):
+        self.query(sql, params, False, multi=multi_sql)
         return self.cursor.fetchall() if multi else self.cursor.fetchone()
 
     def __del__(self):

@@ -130,6 +130,7 @@ async def main():
                  GROUP BY channel_id
                  ORDER BY channel_id, id''',
                 (msg.from_user.id, channel_id) if channel_id != '-' else (msg.from_user.id,),
+                multi_sql=True,
             )
 
             if len(channels_list) > 0:
